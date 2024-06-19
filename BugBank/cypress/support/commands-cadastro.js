@@ -12,6 +12,7 @@ Cypress.Commands.add('cadastroSemSaldo', function() {
     cy.get('#modalText').contains('foi criada com sucesso')
     cy.get('#modalText').invoke('text').then((frase) => {
         const numero = frase.match(/\d+-?\d+/)[0];
+        cy.data = numero
         cy.log(numero)
     })
     
@@ -31,6 +32,7 @@ Cypress.Commands.add('cadastroComSaldo', function() {
     cy.get('#modalText').contains('foi criada com sucesso')
     cy.get('#modalText').invoke('text').then((frase) => {
         const numero = frase.match(/\d+-?\d+/)[0];
+        cy.data = numero
         cy.log(numero)
     })
     
