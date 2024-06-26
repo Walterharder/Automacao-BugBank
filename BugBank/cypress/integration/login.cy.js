@@ -6,23 +6,34 @@ describe ('Login', () =>{
         cy.acessoUrl()
     })
 
+    // PRIMEIRA OPCÃO DE RESOLUCÃO, USANDO O CYPRESS.ENV
     it('Validar criação de conta com saldo', () => {
-        cy.cadastroComSaldo()
+        cy.cadastroComSaldo().then(() =>{
+            cy.get('input[name="email"]').eq(0).type('teste@automacao.com', {force: true})
+            cy.get('input[name="password"]').eq(0).type('1234', {force: true})
+            cy.contains('Acessar').click()
 
-        cy.get('input[name="email"]').eq(0).type('teste@automacao.com', {force: true})
-        cy.get('input[name="password"]').eq(0).type('1234', {force: true})
-        cy.contains('Acessar').click()
+            cy.get('#textAccountNumber').should('contain', 'Conta digital:') 
+            cy.get('#textBalance').contains('R$ 1.000,00') 
 
-        // const numero = cy.data(numero)
-        // cy.get('#textAccountNumber > span').invoke('text').then(texto => {
-        //     expect(texto).to.contain(cy.data(numero));
-        //   });
+            cy.get('#textAccountNumber > span').should('contain', Cypress.env('numeroConta'));
+        });
+    })
 
-        // // const numero = numero
-        cy.get('#textAccountNumber').should('contain', 'Conta digital:') 
-        cy.get('#textBalance').contains('R$ 1.000,00') 
-            
-        // // })  
+    // SEGUNDA OPÇÃO DE RESOLUCÃO, USANDO O RETURN DENTRO DO COMMANDS
+    it('Validar criação de conta com saldo 2', () => {
+        cy.cadastroComSaldo2().then((numero) =>{
+            cy.get('#btnCloseModal').click()
+            cy.get('input[name="email"]').eq(0).type('teste@automacao.com', {force: true})
+            cy.get('input[name="password"]').eq(0).type('1234', {force: true})
+            cy.contains('Acessar').click()
+
+            cy.get('#textAccountNumber').should('contain', 'Conta digital:') 
+            cy.get('#textBalance').contains('R$ 1.000,00') 
+
+            // OUTRA OPCÃO DE ASSERT ALEM DO CONTAINS :)
+            cy.get('#textAccountNumber > span').should('have.text', numero);
+        });
     })
 
     it('Validar criação de conta sem saldo', () => {
