@@ -23,7 +23,7 @@ Você pode executar os testes pelos scripts que foram adicionados ao projeto.
 
 >Execute `npm run cy:open` para abrir o Cypress no modo interativo em uma viewport desktop.
 
->Ou execute `npm test` para executar o teste no modo headless.
+>Ou execute `npm test` para executar o teste no modo headless. 
 
 >Ou execute `npm test:report` para executar o teste no modo headless junto com a geração do Mochawesome-reporter.
 
