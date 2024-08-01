@@ -15,6 +15,8 @@ Também utilizei o Mochawesome-reporter pára geração de relatórios.
 
 >Execute `npm i --save-dev cypress-mochawesome-reporter` para instalação do Mochawesome-reporter.
 
+>Atualmente atualizei a versão do cypres para 12.0.2.
+
 ## Testes
 
 Você pode executar os testes pelos scripts que foram adicionados ao projeto.

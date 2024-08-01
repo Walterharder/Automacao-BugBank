@@ -1,20 +1,29 @@
 /// <reference types="Cypress"/>
+import { faker } from '@faker-js/faker'
 
 describe ('Login', () =>{
+    let acessos
 
     beforeEach('Acessar o ambiente BugBank', () => {
-        cy.acessoUrl()
+        cy.visit('/')
+
+        acessos = {
+            email: faker.internet.email(),
+            password: faker.internet.password(),
+            fullName: faker.name.fullName()
+          }
     })
 
     // PRIMEIRA OPCÃO DE RESOLUCÃO, USANDO O CYPRESS.ENV
     it('Validar criação de conta com saldo', () => {
-        cy.cadastroComSaldo().then(() =>{
-            cy.get('input[name="email"]').eq(0).type('teste@automacao.com', {force: true})
-            cy.get('input[name="password"]').eq(0).type('1234', {force: true})
+        cy.cadastroComSaldo(acessos).then(() =>{
+            cy.get('#btnCloseModal').click()
+            cy.get('input[name="email"]').eq(0).type(acessos.email, {force: true})
+            cy.get('input[name="password"]').eq(0).type(acessos.password, {force: true})
             cy.contains('Acessar').click()
 
+            cy.get('#textBalance').contains('R$ 1.000,00')  
             cy.get('#textAccountNumber').should('contain', 'Conta digital:') 
-            cy.get('#textBalance').contains('R$ 1.000,00') 
 
             cy.get('#textAccountNumber > span').should('contain', Cypress.env('numeroConta'));
         });
@@ -22,56 +31,55 @@ describe ('Login', () =>{
 
     // SEGUNDA OPÇÃO DE RESOLUCÃO, USANDO O RETURN DENTRO DO COMMANDS
     it('Validar criação de conta com saldo 2', () => {
-        cy.cadastroComSaldo2().then((numero) =>{
+        cy.cadastroComSaldo2(acessos).then((numero) =>{
             cy.get('#btnCloseModal').click()
-            cy.get('input[name="email"]').eq(0).type('teste@automacao.com', {force: true})
-            cy.get('input[name="password"]').eq(0).type('1234', {force: true})
+            cy.get('input[name="email"]').eq(0).type(acessos.email, {force: true})
+            cy.get('input[name="password"]').eq(0).type(acessos.password, {force: true})
             cy.contains('Acessar').click()
 
-            cy.get('#textAccountNumber').should('contain', 'Conta digital:') 
             cy.get('#textBalance').contains('R$ 1.000,00') 
-
+            cy.get('#textAccountNumber').should('contain', 'Conta digital:') 
+            
             // OUTRA OPCÃO DE ASSERT ALEM DO CONTAINS :)
             cy.get('#textAccountNumber > span').should('have.text', numero);
         });
     })
 
     it('Validar criação de conta sem saldo', () => {
-        cy.cadastroSemSaldo()
+        cy.cadastroSemSaldo(acessos).then((numero) => {
+            cy.get('#btnCloseModal').click()
+            cy.get('input[name="email"]').eq(0).type(acessos.email, {force: true})
+            cy.get('input[name="password"]').eq(0).type(acessos.password, {force: true})
+            cy.contains('Acessar').click()
 
-        cy.get('input[name="email"]').eq(0).type('teste@automacao.com', {force: true})
-        cy.get('input[name="password"]').eq(0).type('1234', {force: true})
-        cy.contains('Acessar').click()
-
-        // cy.get('#textAccountNumber > span').invoke('text').then((frase) => {
-        //     frase.match(numero)[0];
-        //     cy.data = numero
-        // })
-
-        cy.get('#textAccountNumber').should('contain', 'Conta digital:') 
-        cy.get('#textBalance').contains('R$ 0,00')
-
-        
+            cy.get('#textBalance').contains('R$ 0,00')
+            cy.get('#textAccountNumber').should('contain', 'Conta digital:') 
+            
+            cy.get('#textAccountNumber > span').should('have.text', numero);
+        })       
 
     })
 
     it('Validar campos obrigatórios de Login da conta', () => {
+        let email
+        let password
+
         cy.contains('Acessar').click()
         cy.get('p:contains("obrigatório")').eq(0).should('have.text', 'É campo obrigatório')
         cy.get('p:contains("obrigatório")').eq(1).should('have.text', 'É campo obrigatório')
-        cy.get('input[name="email"]').eq(0).type('teste@automacao.com', {force: true})
+        cy.get('input[name="email"]').eq(0).type(acessos.email, {force: true})
         cy.contains('Acessar').click()
         cy.get('p:contains("obrigatório")').eq(0).should('have.text', 'É campo obrigatório')
         cy.get('input[name="email"]').eq(0).clear().should('have.text', '')
-        cy.get('input[name="password"]').eq(0).type('1234', {force: true})
+        cy.get('input[name="password"]').eq(0).type(acessos.password, {force: true})
         cy.contains('Acessar').click()
         cy.get('p:contains("obrigatório")').eq(0).should('have.text', 'É campo obrigatório')
 
     })
 
     it('Validar a tentativa de login de usuário não cadastrado', () => {
-        cy.get('input[name="email"]').eq(0).type('testeauromacao@automacao.com', {force: true})
-        cy.get('input[name="password"]').eq(0).type('123456', {force: true})
+        cy.get('input[name="email"]').eq(0).type(acessos.email, {force: true})
+        cy.get('input[name="password"]').eq(0).type(acessos.password, {force: true})
         cy.contains('Acessar').click()
         
         cy.get('.styles__ContainerContent-sc-8zteav-1').should('be.visible')
@@ -80,23 +88,23 @@ describe ('Login', () =>{
     })
 
     it('Validar a tentativa de login sem usuário', () => {
-        cy.get('input[name="password"]').eq(0).type('123456', {force: true})
+        cy.get('input[name="password"]').eq(0).type(acessos.password, {force: true})
         cy.contains('Acessar').click()
         cy.get('p:contains("obrigatório")').eq(0).should('have.text', 'É campo obrigatório')
 
     })
 
     it('Validar a tentativa de login sem a senha', () => {
-        cy.get('input[name="email"]').eq(0).type('testeauromacao@automacao.com', {force: true})
+        cy.get('input[name="email"]').eq(0).type(acessos.email, {force: true})
         cy.contains('Acessar').click()
         cy.get('p:contains("obrigatório")').eq(0).should('have.text', 'É campo obrigatório')
     })
 
-    it('Validar a tentativa de login com senha inválida', () => {
-        cy.cadastroComSaldo()
-
-        cy.get('input[name="email"]').eq(0).type('teste@automacao.com', {force: true})
-        cy.get('input[name="password"]').eq(0).type('12345', {force: true})
+    it.only('Validar a tentativa de login com senha inválida', () => {
+        cy.cadastroComSaldo(acessos)
+        cy.get('#btnCloseModal').click()
+        cy.get('input[name="email"]').eq(0).type(acessos.email, {force: true})
+        cy.get('input[name="password"]').eq(0).type('Teste123', {force: true})
         cy.contains('Acessar').click()
 
         cy.get('.styles__ContainerContent-sc-8zteav-1').should('be.visible')
