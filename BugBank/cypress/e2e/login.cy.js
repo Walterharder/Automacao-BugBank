@@ -1,5 +1,7 @@
 /// <reference types="Cypress"/>
 import { faker } from '@faker-js/faker'
+import Login from '../support/pages/login'
+import Cadastro from '../support/pages/cadastro'
 
 describe ('Login', () =>{
     let acessos
@@ -100,7 +102,7 @@ describe ('Login', () =>{
         cy.get('p:contains("obrigatório")').eq(0).should('have.text', 'É campo obrigatório')
     })
 
-    it.only('Validar a tentativa de login com senha inválida', () => {
+    it('Validar a tentativa de login com senha inválida', () => {
         cy.cadastroComSaldo(acessos)
         cy.get('#btnCloseModal').click()
         cy.get('input[name="email"]').eq(0).type(acessos.email, {force: true})

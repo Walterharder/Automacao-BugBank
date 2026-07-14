@@ -1,11 +1,13 @@
-/// <reference types="Cypress"/>
 import { faker } from '@faker-js/faker'
+import Login from '../support/pages/login'
+import Cadastro from '../support/pages/cadastro'
+
 
 describe('Cadastro', () =>{
     let acessos
 
     beforeEach('Acessar o ambiente BugBank', () => {
-        cy.visit('/')
+        Login.acessarUrl()
 
         acessos = {
             email: faker.internet.email(),
@@ -14,7 +16,7 @@ describe('Cadastro', () =>{
           }
     })
 
-    it('Validar se o campos na tela de registro estão vazios', () => {
+    it.only('Validar se o campos na tela de registro estão vazios', () => {
         cy.get('.ihdmxA').click()
         cy.get('input[name="email"]').eq(1).should('have.value', '')
         cy.get('input[type="name"]').should('have.value', '')

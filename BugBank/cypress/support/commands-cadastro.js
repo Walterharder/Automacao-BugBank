@@ -1,7 +1,3 @@
-import { regexp } from "assert-plus"
-import { get } from "lodash"
-import { faker } from '@faker-js/faker'
-
 Cypress.Commands.add('cadastroSemSaldo', acessos => {
     let numero;
     cy.get('.ihdmxA').click()
